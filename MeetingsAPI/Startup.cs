@@ -1,7 +1,10 @@
+using AutoMapper;
+using MeetingsAPI.Helpers;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -26,6 +29,17 @@ namespace MeetingsAPI
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+
+            services.AddDbContext<ApplicationDbContext>(options =>
+            {
+                options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"));
+            });
+            services.AddAutoMapper(typeof(Startup));
+
+            services.AddSingleton(provider => new MapperConfiguration(config =>
+            {
+                config.AddProfile(new AutoMapperProfiles());
+            }).CreateMapper());
 
             services.AddControllers();
             services.AddSwaggerGen(c =>
